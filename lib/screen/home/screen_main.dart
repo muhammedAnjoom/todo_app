@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/screen/home/widget/screen_task_card.dart';
+import 'package:todo_app/screen/task/screen_task..dart';
 
 class ScreenHomePage extends StatefulWidget {
   const ScreenHomePage({Key? key}) : super(key: key);
@@ -50,23 +51,36 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                   ),
                 ],
               ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: const Color(0xff7349ef)),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 30,
-                      ),
+              Positioned(
+                bottom: 20,
+                right: 0,
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: const  LinearGradient(
+                      colors: [
+                        Color(0xff7349fe),
+                        Color(0xff643fdb),
+                      ],
+                      begin: Alignment(0.0,-1.0),
+                      end: Alignment(0.0,1.0)
+                    ),
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (ctx) => const ScreenTaskPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 30,
                     ),
                   ),
                 ),
