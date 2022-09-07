@@ -30,13 +30,16 @@ class ScreenTaskPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Expanded(
+                        Expanded(
                           child: TextField(
-                            decoration: InputDecoration(
+                            onSubmitted: (value){
+                              print(value);
+                            },
+                            decoration: const InputDecoration(
                               hintText: "Enter Task Title",
                               border: InputBorder.none,
                             ),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 26,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xfff211551)),
