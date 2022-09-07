@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/domain/task/model/task.dart';
+import 'package:todo_app/infrastructure/task%20helper/dataBase_helper.dart';
 import 'package:todo_app/screen/widget/todo_widget.dart';
 
 class ScreenTaskPage extends StatelessWidget {
@@ -32,8 +34,14 @@ class ScreenTaskPage extends StatelessWidget {
                         ),
                         Expanded(
                           child: TextField(
-                            onSubmitted: (value){
-                              print(value);
+                            onSubmitted: (value) async{
+
+                              if (value != '') {
+                                DatatBaseHelper _dbHelper = DatatBaseHelper();
+                                Task _newTask = Task(title: value);
+                                await _dbHelper.insertTask(_newTask);
+                                print("new task is sumbited");
+                              }
                             },
                             decoration: const InputDecoration(
                               hintText: "Enter Task Title",
@@ -48,8 +56,16 @@ class ScreenTaskPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const TextField(
-                    decoration: InputDecoration(
+                  TextField(
+                    onSubmitted: (value)async{
+                      if(value.isNotEmpty){
+                        DatatBaseHelper _dbHelper = DatatBaseHelper();
+                        Task _newTask = Task(descripiton: value);
+                        await _dbHelper.insertTask(_newTask);
+                        print('description sumbit');
+                      }
+                    },
+                    decoration:const InputDecoration(
                         hintText: "Enter Descripiton for the task...",
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(horizontal: 24)),
@@ -80,9 +96,7 @@ class ScreenTaskPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                         color: Color.fromARGB(255, 238, 15, 15)),
                     child: IconButton(
-                      onPressed: () {
-                       
-                      },
+                      onPressed: () {},
                       icon: const Icon(
                         Icons.delete,
                         color: Colors.white,

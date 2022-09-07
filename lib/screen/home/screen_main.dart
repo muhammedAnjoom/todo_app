@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/infrastructure/task%20helper/dataBase_helper.dart';
 import 'package:todo_app/screen/home/widget/screen_task_card.dart';
 import 'package:todo_app/screen/task/screen_task..dart';
 
@@ -10,6 +11,7 @@ class ScreenHomePage extends StatefulWidget {
 }
 
 class _ScreenHomePageState extends State<ScreenHomePage> {
+  DatatBaseHelper _datatBaseHelper = DatatBaseHelper();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,33 +24,36 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Stack(
             children: [
-              ListView(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Image(
-                        width: 100,
-                        height: 100,
-                        image: AssetImage(
-                          "assets/images/log.jpg",
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      ScreenTaskCard(
-                        title: "Get Start!",
-                        description:
-                            "Hello Users! Welcome to WHAT_TODO app.this is a default task that you can edit or delete to start using the app.",
-                      ),
-                      ScreenTaskCard(),
-                      ScreenTaskCard(),
-                      ScreenTaskCard(),
-                      ScreenTaskCard(),
-                      ScreenTaskCard()
-                    ],
+                  const Image(
+                    width: 100,
+                    height: 100,
+                    image: AssetImage(
+                      "assets/images/log.jpg",
+                    ),
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Expanded(
+                    child: FutureBuilder(
+                      initialData: const [],
+                      future: _datatBaseHelper.getTasks(),
+                      builder: ((context, snapshot) {
+                        return ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: ((context, index) {
+                            return ScreenTaskCard(
+                              title: snapshot.data![index].title,
+                              description: snapshot.data![index].descripiton,
+                            );
+                          }),
+                        );
+                      }),
+                    ),
+                  )
                 ],
               ),
               Positioned(
@@ -59,14 +64,10 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                   height: 60,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    gradient: const  LinearGradient(
-                      colors: [
-                        Color(0xff7349fe),
-                        Color(0xff643fdb),
-                      ],
-                      begin: Alignment(0.0,-1.0),
-                      end: Alignment(0.0,1.0)
-                    ),
+                    gradient: const LinearGradient(colors: [
+                      Color(0xff7349fe),
+                      Color(0xff643fdb),
+                    ], begin: Alignment(0.0, -1.0), end: Alignment(0.0, 1.0)),
                   ),
                   child: IconButton(
                     onPressed: () {
@@ -75,7 +76,11 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                         MaterialPageRoute(
                           builder: (ctx) => const ScreenTaskPage(),
                         ),
-                      );
+                      ).then((value) {
+                        setState(() {
+                          
+                        });
+                      });
                     },
                     icon: const Icon(
                       Icons.add,
