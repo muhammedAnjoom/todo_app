@@ -10,7 +10,6 @@ class ScreenHomePage extends StatefulWidget {
   _ScreenHomePageState createState() => _ScreenHomePageState();
 }
 
-
 class _ScreenHomePageState extends State<ScreenHomePage> {
   DatatBaseHelper _datatBaseHelper = DatatBaseHelper();
   @override
@@ -57,7 +56,9 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                                       );
                                     },
                                   ),
-                                );
+                                ).then((value) {
+                                  setState(() {});
+                                });
                               },
                               child: ScreenTaskCard(
                                 title: snapshot.data![index].title,
@@ -89,7 +90,7 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                         context,
                         MaterialPageRoute(
                           builder: (ctx) => const ScreenTaskPage(
-                           task: null,
+                            task: null,
                           ),
                         ),
                       ).then((value) {

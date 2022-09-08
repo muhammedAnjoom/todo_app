@@ -3,7 +3,6 @@ import 'package:todo_app/domain/task/model/task.dart';
 
 import 'package:todo_app/infrastructure/task%20helper/dataBase_helper.dart';
 
-
 class ScreenTaskPage extends StatefulWidget {
   const ScreenTaskPage({Key? key, required this.task}) : super(key: key);
   final Task? task;
@@ -13,18 +12,18 @@ class ScreenTaskPage extends StatefulWidget {
 }
 
 class _ScreenTaskPageState extends State<ScreenTaskPage> {
-    DatatBaseHelper _dbHelper = DatatBaseHelper();
+  DatatBaseHelper _dbHelper = DatatBaseHelper();
   String _taskTitle = "";
   FocusNode? _tittleFoucs;
-   FocusNode? _descripitonFoucs;
-   bool _contentVisbile = false;
+  FocusNode? _descripitonFoucs;
+  bool _contentVisbile = false;
   @override
   void initState() {
     if (widget.task != null) {
       _contentVisbile = true;
       _taskTitle = widget.task!.title!;
     }
-    _tittleFoucs =FocusNode();
+    _tittleFoucs = FocusNode();
     _descripitonFoucs = FocusNode();
     super.initState();
   }
@@ -33,6 +32,7 @@ class _ScreenTaskPageState extends State<ScreenTaskPage> {
   void dispose() {
     _tittleFoucs!.dispose();
     _descripitonFoucs!.dispose();
+    super.dispose();
   }
 
   @override
@@ -68,21 +68,22 @@ class _ScreenTaskPageState extends State<ScreenTaskPage> {
                             controller: TextEditingController()
                               ..text = _taskTitle,
                             onSubmitted: (value) async {
+                              int _taskId = 0;
                               if (value != '') {
                                 if (widget.task == null) {
-                                
                                   Task _newTask = Task(title: value);
-                                  int _taskId = await _dbHelper.insertTask(_newTask);
-                                  print("new task $_taskId");
+                                  _taskId =
+                                      await _dbHelper.insertTask(_newTask);
+                                  print("new task ");
                                   setState(() {
-                                    _contentVisbile =true;
-                                    _taskTitle =value; 
+                                    _contentVisbile = true;
+                                    _taskTitle = value;
                                   });
                                   print("new task is sumbited");
                                 } else {
-                                  print("update in exceting task");
+                                  _dbHelper.updateTaskTitle(_taskId, value);
+                                  print("update in succssfully");
                                 }
-                                
                               }
                               _tittleFoucs!.requestFocus();
                             },

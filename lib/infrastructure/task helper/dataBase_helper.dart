@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -29,6 +31,13 @@ class DatatBaseHelper {
       taskId = value;
     });
     return taskId;
+  }
+
+  Future<void> updateTaskTitle(int id,String title)async{
+    Database _db = await dataBase();
+    print(id);
+     final _result = await _db.rawUpdate("UPDATE tasks SET title = '$title'  WHERE id = '$id'");
+  log(_result.toString());
   }
 
   Future<List<Task>> getTasks() async {
