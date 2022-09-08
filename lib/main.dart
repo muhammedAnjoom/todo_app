@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:todo_app/screen/home/screen_main.dart';
+import 'package:todo_app/screen/screen_home.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+    );
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -20,9 +24,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.nunitoSansTextTheme(Theme.of(context).textTheme),
         primarySwatch: Colors.blue,
       ),
-      home: ScreenHomePage(),
+      home: const ScreenHome(),
     );
   }
 }
-
-
