@@ -1,13 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/domain/task/model/task.dart';
-import 'package:todo_app/infrastructure/task%20helper/dataBase_helper.dart';
-import 'package:todo_app/screen/widget/todo_widget.dart';
 
-class ScreenTaskPage extends StatelessWidget {
-  const ScreenTaskPage({Key? key}) : super(key: key);
+import 'package:todo_app/infrastructure/task%20helper/dataBase_helper.dart';
+
+
+class ScreenTaskPage extends StatefulWidget {
+  const ScreenTaskPage({Key? key, required this.task}) : super(key: key);
+  final Task? task;
+
+  @override
+  State<ScreenTaskPage> createState() => _ScreenTaskPageState();
+}
+
+class _ScreenTaskPageState extends State<ScreenTaskPage> {
+    DatatBaseHelper _dbHelper = DatatBaseHelper();
+  String _taskTitle = "";
+  FocusNode? _tittleFoucs;
+   FocusNode? _descripitonFoucs;
+   bool _contentVisbile = false;
+  @override
+  void initState() {
+    if (widget.task != null) {
+      _contentVisbile = true;
+      _taskTitle = widget.task!.title!;
+    }
+    _tittleFoucs =FocusNode();
+    _descripitonFoucs = FocusNode();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tittleFoucs!.dispose();
+    _descripitonFoucs!.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    // print(widget.task!.id!);
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -34,14 +64,27 @@ class ScreenTaskPage extends StatelessWidget {
                         ),
                         Expanded(
                           child: TextField(
-                            onSubmitted: (value) async{
-
+                            focusNode: _tittleFoucs,
+                            controller: TextEditingController()
+                              ..text = _taskTitle,
+                            onSubmitted: (value) async {
                               if (value != '') {
-                                DatatBaseHelper _dbHelper = DatatBaseHelper();
-                                Task _newTask = Task(title: value);
-                                await _dbHelper.insertTask(_newTask);
-                                print("new task is sumbited");
+                                if (widget.task == null) {
+                                
+                                  Task _newTask = Task(title: value);
+                                  int _taskId = await _dbHelper.insertTask(_newTask);
+                                  print("new task $_taskId");
+                                  setState(() {
+                                    _contentVisbile =true;
+                                    _taskTitle =value; 
+                                  });
+                                  print("new task is sumbited");
+                                } else {
+                                  print("update in exceting task");
+                                }
+                                
                               }
+                              _tittleFoucs!.requestFocus();
                             },
                             decoration: const InputDecoration(
                               hintText: "Enter Task Title",
@@ -56,51 +99,50 @@ class ScreenTaskPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TextField(
-                    onSubmitted: (value)async{
-                      if(value.isNotEmpty){
-                        DatatBaseHelper _dbHelper = DatatBaseHelper();
-                        Task _newTask = Task(descripiton: value);
-                        await _dbHelper.insertTask(_newTask);
-                        print('description sumbit');
-                      }
-                    },
-                    decoration:const InputDecoration(
-                        hintText: "Enter Descripiton for the task...",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 24)),
+                  Visibility(
+                    visible: _contentVisbile,
+                    child: TextField(
+                      focusNode: _descripitonFoucs,
+                      onSubmitted: (value) async {
+                        if (value.isNotEmpty) {
+                          DatatBaseHelper _dbHelper = DatatBaseHelper();
+                          Task _newTask = Task(descripiton: value);
+                          await _dbHelper.insertTask(_newTask);
+                          print('description sumbit');
+                        }
+                        _descripitonFoucs!.requestFocus();
+                      },
+                      decoration: const InputDecoration(
+                          hintText: "Enter Descripiton for the task...",
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 24)),
+                    ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                  TodoWidget(
-                    text: "study",
-                    isDone: true,
-                  ),
-                  TodoWidget(
-                    text: "write a noval",
-                    isDone: true,
-                  ),
-                  TodoWidget()
                 ],
               ),
-              Positioned(
-                bottom: 24,
-                right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 14),
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Color.fromARGB(255, 238, 15, 15)),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                        size: 30,
+              Visibility(
+                visible: _contentVisbile,
+                child: Positioned(
+                  bottom: 24,
+                  right: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 14),
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Color.fromARGB(255, 238, 15, 15)),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 30,
+                        ),
                       ),
                     ),
                   ),

@@ -10,6 +10,7 @@ class ScreenHomePage extends StatefulWidget {
   _ScreenHomePageState createState() => _ScreenHomePageState();
 }
 
+
 class _ScreenHomePageState extends State<ScreenHomePage> {
   DatatBaseHelper _datatBaseHelper = DatatBaseHelper();
   @override
@@ -45,9 +46,22 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                         return ListView.builder(
                           itemCount: snapshot.data!.length,
                           itemBuilder: ((context, index) {
-                            return ScreenTaskCard(
-                              title: snapshot.data![index].title,
-                              description: snapshot.data![index].descripiton,
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (ctx) {
+                                      return ScreenTaskPage(
+                                        task: snapshot.data![index],
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: ScreenTaskCard(
+                                title: snapshot.data![index].title,
+                              ),
                             );
                           }),
                         );
@@ -74,12 +88,12 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (ctx) => const ScreenTaskPage(),
+                          builder: (ctx) => const ScreenTaskPage(
+                           task: null,
+                          ),
                         ),
                       ).then((value) {
-                        setState(() {
-                          
-                        });
+                        setState(() {});
                       });
                     },
                     icon: const Icon(

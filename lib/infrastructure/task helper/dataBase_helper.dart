@@ -7,8 +7,8 @@ class DatatBaseHelper {
   Future<Database> dataBase() async {
     return openDatabase(
       join(await getDatabasesPath(), 'todo.db'),
-      onCreate: (db, version) {
-        return db.execute(
+      onCreate: (db, version) async {
+        return await db.execute(
           'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, descripiton TEXT)',
         );
       },
@@ -16,18 +16,25 @@ class DatatBaseHelper {
     );
   }
 
-  Future<void> insertTask(Task task) async {
+  Future<int> insertTask(Task task) async {
+    int taskId = 0;
     Database _db = await dataBase();
-    await _db.insert(
+    await _db
+        .insert(
       "tasks",
       task.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    )
+        .then((value) {
+      taskId = value;
+    });
+    return taskId;
   }
 
   Future<List<Task>> getTasks() async {
     Database _db = await dataBase();
     List<Map<String, dynamic>> taskMap = await _db.query('tasks');
+    // await _db.delete('todo');
     return List.generate(taskMap.length, (index) {
       return Task(
         id: taskMap[index]['id'],
@@ -36,12 +43,8 @@ class DatatBaseHelper {
       );
     });
 
-     
-
-  // Remove the Dog from the database.
- 
+    // Remove the Dog from the database.
   }
-  Future<void> deleteDog() async {
- 
-}
+
+  Future<void> deleteDog() async {}
 }
