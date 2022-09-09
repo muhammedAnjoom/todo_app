@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.nunitoSansTextTheme(Theme.of(context).textTheme),
         primarySwatch: Colors.blue,
       ),
-      home: const ScreenHome(),
+      home:  ScreenHome(),
     );
   }
 }
