@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
+import 'package:todo_app/model/todo.dart';
 import 'package:todo_app/screen/screen_home.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final appDocmentsDirectroy =
+      await path_provider.getApplicationDocumentsDirectory();
+  Hive.init(appDocmentsDirectroy.path);
+  Hive.registerAdapter<Todo>(TodoAdapter());
+  await Hive.openBox<Todo>("todo");
   runApp(const MyApp());
 }
 
@@ -24,7 +32,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.nunitoSansTextTheme(Theme.of(context).textTheme),
         primarySwatch: Colors.blue,
       ),
-      home:  ScreenHome(),
+      home: ScreenHome(),
     );
   }
 }

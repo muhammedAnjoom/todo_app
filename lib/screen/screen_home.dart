@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/model/todo.dart';
 import 'package:todo_app/screen/screen_todo_item.dart';
 import 'package:todo_app/screen/widgets/custom_appBar.dart';
@@ -6,15 +8,9 @@ import 'package:todo_app/screen/widgets/custom_appBar.dart';
 import '../core/colors/constant_colors.dart';
 import 'widgets/search_widget.dart';
 
-class ScreenHome extends StatefulWidget {
+class ScreenHome extends StatelessWidget {
   ScreenHome({Key? key}) : super(key: key);
 
-  @override
-  State<ScreenHome> createState() => _ScreenHomeState();
-}
-
-class _ScreenHomeState extends State<ScreenHome> {
-  final todoList = ToDo.todoList();
   final _todoController = TextEditingController();
 
   @override
@@ -25,109 +21,106 @@ class _ScreenHomeState extends State<ScreenHome> {
           child: CustomAppBar(),
           preferredSize: Size.fromHeight(70),
         ),
-        body: Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
-              child: Column(
-                children: [
-                  SearchBox(),
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                              top: 20, bottom: 10, left: 10),
-                          child: const Text(
-                            "All ToDos",
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        for (ToDo toDo in todoList)
-                          TodoItem(
-                            todo: toDo,
-                            onToDoChanged: _handleToDoChange,
-                            onDeletedItem: _deletedToDoItem,
-                          ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 5),
-                      margin: const EdgeInsets.only(
-                          bottom: 20, right: 20, left: 20),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: const [
-                            BoxShadow(
-                                color: Colors.grey,
-                                offset: Offset(0.0, 0.0),
-                                blurRadius: 10.0,
-                                spreadRadius: 0.0),
-                          ],
-                          borderRadius: BorderRadius.circular(10)),
-                      child: TextField(
-                        controller: _todoController,
-                        decoration: const InputDecoration(
-                            hintText: "Add  a new todo item",
-                            border: InputBorder.none),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 20, right: 20),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final _text = _todoController.text;
-                        _addToDoItem(_text);
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Stack(
+            children: [
+              const SearchBox(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 60),
+                child: ValueListenableBuilder<Box<Todo>>(
+                  valueListenable: Hive.box<Todo>("todo").listenable(),
+                  builder: (context, todos, child) {
+                    return ListView.builder(
+                      reverse: true,
+                      shrinkWrap: true,
+                      itemCount: todos.length,
+                      itemBuilder: (context, index) {
+                        final todo = todos.getAt(index);
+                        return TodoItem(
+                          index: index,
+                          task: todo!.task,
+                          isDone: todo.isDone,
+                          onTap: () => _toggleTodoState(index),
+                          onDelete: () => _deleteTodo(index),
+                        );
                       },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: tdBlue,
-                          minimumSize: const Size(60, 60),
-                          elevation: 10),
-                      child: const Text(
-                        "+",
-                        style: TextStyle(fontSize: 40),
+                    );
+                  },
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 5),
+                        margin: const EdgeInsets.only(
+                            bottom: 20, right: 20, left: 20),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: const [
+                              BoxShadow(
+                                  color: Colors.grey,
+                                  offset: Offset(0.0, 0.0),
+                                  blurRadius: 10.0,
+                                  spreadRadius: 0.0),
+                            ],
+                            borderRadius: BorderRadius.circular(10)),
+                        child: TextField(
+                          controller: _todoController,
+                          decoration: const InputDecoration(
+                              hintText: "Add  a new todo item",
+                              border: InputBorder.none),
+                        ),
                       ),
                     ),
-                  )
-                ],
-              ),
-            )
-          ],
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20, right: 20),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // final _text = _todoController.text;
+                          _addTodo();
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: tdBlue,
+                            minimumSize: const Size(60, 60),
+                            elevation: 10),
+                        child: const Text(
+                          "+",
+                          style: TextStyle(fontSize: 40),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ));
   }
 
-  void _handleToDoChange(ToDo todo) {
-    setState(() {
-      todo.isDone = !todo.isDone;
-    });
+  Future<void> _addTodo() async {
+    if (_todoController.text.isEmpty) {
+      return ;
+    } else {
+      final todo = Todo(task: _todoController.text, isDone: false);
+      await Hive.box<Todo>("todo").add(todo);
+      _todoController.text = "";
+    }
   }
 
-  void _deletedToDoItem(String id) {
-    setState(() {
-      todoList.removeWhere((item) => item.id == id);
-    });
+  Future<void> _deleteTodo(int index) async {
+    await Hive.box<Todo>("todo").deleteAt(index);
   }
 
-  void _addToDoItem(String toDo) {
-    setState(() {
-      todoList.add(ToDo(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          todoText: toDo));
-    });
-    _todoController.clear();
+  Future<void> _toggleTodoState(int index) async {
+    final todo = Hive.box<Todo>("todo").getAt(index);
+    await Hive.box<Todo>("todo").putAt(
+      index,
+      Todo(task: todo!.task, isDone: !todo.isDone),
+    );
   }
 }

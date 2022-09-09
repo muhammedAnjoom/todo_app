@@ -3,24 +3,24 @@ import 'package:todo_app/core/colors/constant_colors.dart';
 import 'package:todo_app/model/todo.dart';
 
 class TodoItem extends StatelessWidget {
-  final ToDo todo;
-  final onToDoChanged;
-  final onDeletedItem;
+  // final ToDo todo;
+  final int index;
+  final String task;
+  final bool isDone;
+  final VoidCallback? onTap;
+  final VoidCallback? onDelete;
   const TodoItem({
-    Key? key,
-    required this.todo,
-    this.onToDoChanged,
-    this.onDeletedItem,
+    Key? key, required this.index, required this.task, required this.isDone, this.onTap, this.onDelete,
+    
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: Key(index.toString()),
       margin: EdgeInsets.symmetric(vertical: 10),
       child: ListTile(
-        onTap: () {
-         onToDoChanged(todo);
-        },
+        onTap: onTap,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: const BorderSide(
@@ -30,15 +30,15 @@ class TodoItem extends StatelessWidget {
         ),
         tileColor: Colors.white,
         leading: Icon(
-          todo.isDone == true ? Icons.check_box : Icons.check_box_outline_blank,
+          isDone  ? Icons.check_box : Icons.check_box_outline_blank,
           color: tdBlue,
         ),
         title: Text(
-          todo.todoText!,
+          task,
           style: TextStyle(
             fontSize: 16,
             color: tdBlack,
-            decoration: todo.isDone == true
+            decoration: isDone
                 ? TextDecoration.lineThrough
                 : TextDecoration.none,
           ),
@@ -51,10 +51,7 @@ class TodoItem extends StatelessWidget {
           decoration: BoxDecoration(
               color: tdRed, borderRadius: BorderRadius.circular(5)),
           child: IconButton(
-            onPressed: () {
-              onDeletedItem(todo.id);
-              print("delete todo");
-            },
+            onPressed: onDelete,
             icon: const Icon(Icons.delete),
             color: Colors.white,
             iconSize: 18,

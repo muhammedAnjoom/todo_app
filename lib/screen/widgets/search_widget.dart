@@ -6,6 +6,7 @@ class SearchBox extends StatelessWidget {
   const SearchBox({
     Key? key,
   }) : super(key: key);
+  
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class SearchBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
       ),
-      child: const TextField(
+      child:const  TextField(
         decoration: InputDecoration(
           border: InputBorder.none,
           contentPadding: EdgeInsets.all(0),

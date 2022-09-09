@@ -1,20 +1,15 @@
-class ToDo{
-  String? id;
-  String? todoText;
-  bool isDone;
-  ToDo({
-    required this.id,
-    required this.todoText,
-    this.isDone = false
-  });
-  static List<ToDo> todoList() {
-    return [
-      ToDo(id: '01', todoText: 'Morning Excercise', isDone: true ),
-      ToDo(id: '02', todoText: 'Buy Groceries', isDone: true ),
-      ToDo(id: '03', todoText: 'Check Emails', ),
-      ToDo(id: '04', todoText: 'Team Meeting', ),
-      ToDo(id: '05', todoText: 'Work on mobile apps for 2 hour', ),
-      ToDo(id: '06', todoText: 'Dinner with Jenny', ),
-    ];
-  }
+
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hive/hive.dart';
+
+part 'todo.freezed.dart';
+part 'todo.g.dart';
+
+@freezed
+class Todo with _$Todo {
+  @HiveType(typeId: 0, adapterName: "TodoAdapter")
+  const factory Todo({
+    @HiveField(0) required String task,
+    @HiveField(1) required bool isDone,
+  }) = _Todo;
 }
