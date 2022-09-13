@@ -1,16 +1,14 @@
 # todo_app
 
-A new Flutter project.
+A todo app.using hive database in flutter.
 
-## Getting Started
+## Screen recorder
 
-This project is a starting point for a Flutter application.
+https://user-images.githubusercontent.com/66232929/189925614-2cca1051-77de-4eed-8c1b-126d2719be85.mp4
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Building
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+-Install Flutter
+- `flutter pub get`
+- `flutter run`
